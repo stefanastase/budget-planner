@@ -3,6 +3,13 @@
 A small terminal app for monthly budget planning: set your income, define
 category budgets, log expenses and see how much you have left.
 
+## Features
+
+- Monthly income and per-category budgets
+- Expense log per category
+- **Saved expenses**: keep reusable entries (Rent, Netflix, ...) and add one or several straight from the Add expense menu
+- Summary with progress bars and over-budget warnings
+
 ## Install
 
 ```bash
@@ -31,7 +38,7 @@ ruff check .
 
 | Module | Responsibility |
 |---|---|
-| `models.py`  | `Expense`, `Month`, `Budget` data classes |
+| `models.py`  | `Expense`, `SavedExpense`, `Month`, `Budget` data classes |
 | `storage.py` | Load/save JSON |
 | `reports.py` | Summary calculations and text rendering |
 | `cli.py`     | Menu and user input |
