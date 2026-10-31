@@ -1,5 +1,5 @@
 from budget_planner import storage
-from budget_planner.models import Budget, Expense
+from budget_planner.models import Budget, Expense, SavedExpense
 
 
 def test_save_and_load(tmp_path):
@@ -20,3 +20,10 @@ def test_load_missing_file_returns_empty(tmp_path):
 def test_env_override(monkeypatch, tmp_path):
     monkeypatch.setenv("BUDGET_DATA_FILE", str(tmp_path / "x.json"))
     assert storage.default_path() == tmp_path / "x.json"
+
+
+def test_saved_expenses_persist(tmp_path):
+    path = tmp_path / "data.json"
+    b = Budget(saved=[SavedExpense("Gym", "Fitness", 29.9)])
+    storage.save(b, path)
+    assert storage.load(path).saved == b.saved

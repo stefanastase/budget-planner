@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from .models import Month
+from .models import Month, SavedExpense
 
 
 @dataclass
@@ -86,3 +86,27 @@ def render(summary: Summary, month_key: str, currency: str = "€") -> str:
     for cat, s in summary.unbudgeted.items():
         out.append(f"{cat:<14} (no budget)  {m(s)}")
     return "\n".join(out) + "\n"
+
+
+def render_saved(saved: list[SavedExpense], currency: str = "€") -> str:
+    """A boxed, titled table of the saved expenses ('' if there are none)."""
+    if not saved:
+        return ""
+    title = f"Saved expenses ({len(saved)})"
+    header = ("#", "Name", "Category", "Amount", "Note")
+    rows = [
+        (str(i), s.name, s.category, money(s.amount, currency), s.note)
+        for i, s in enumerate(saved, 1)
+    ]
+    w = [max(len(r[c]) for r in [header, *rows]) for c in range(5)]
+
+    def fmt(r: tuple) -> str:
+        cells = [r[0].rjust(w[0]), r[1].ljust(w[1]), r[2].ljust(w[2]), r[3].rjust(w[3]), r[4]]
+        return "  ".join(cells).rstrip()
+
+    body = [fmt(header), "─" * max(len(fmt(header)), *(len(fmt(r)) for r in rows)), *map(fmt, rows)]
+    inner = max(len(title) + 1, *(len(line) for line in body))
+    lines = ["┌─ " + title + " " + "─" * (inner - len(title) - 1) + "┐"]
+    lines += ["│ " + line.ljust(inner) + " │" for line in body]
+    lines.append("└" + "─" * (inner + 2) + "┘")
+    return "\n".join(lines)

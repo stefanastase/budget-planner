@@ -1,5 +1,5 @@
-from budget_planner.models import Expense, Month
-from budget_planner.reports import render, summarize
+from budget_planner.models import Expense, Month, SavedExpense
+from budget_planner.reports import render, render_saved, summarize
 
 
 def make_month():
@@ -37,3 +37,16 @@ def test_overplanned():
 def test_render_mentions_over_budget():
     text = render(summarize(make_month()), "2026-10")
     assert "OVER BUDGET" in text and "Fun" in text
+
+
+def test_render_saved_empty():
+    assert render_saved([]) == ""
+
+
+def test_render_saved_panel_is_a_clean_box():
+    saved = [SavedExpense("Rent", "Rent", 850, "flat"), SavedExpense("Netflix", "Fun", 13.99)]
+    text = render_saved(saved)
+    lines = text.splitlines()
+    assert "Saved expenses (2)" in lines[0]
+    assert len({len(line) for line in lines}) == 1  # every line the same width
+    assert "Netflix" in text and "13.99 €" in text and "flat" in text
